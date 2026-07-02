@@ -30,6 +30,11 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
+  // Exposed to the client so raw asset URLs (e.g. <video src>) can be prefixed
+  // with the Pages base path. next/image adds basePath to local images itself.
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isPages ? `/${repo}` : "",
+  },
 };
 
 export default nextConfig;

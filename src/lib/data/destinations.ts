@@ -7,6 +7,32 @@ import { img } from "@/lib/data/images";
  */
 export const destinations: Destination[] = [
   {
+    id: "d0",
+    slug: "doha",
+    name: "Doha",
+    country: "Qatar",
+    countryCode: "QA",
+    region: "Hamad International",
+    continent: "Asia",
+    coordinates: { lat: 25.2609, lng: 51.6138 },
+    tagline: "A layover that felt like an art museum",
+    description:
+      "Hamad International is less an airport than a gallery you happen to fly through — a giant Lamp Bear keeping watch over the CDE concourse, a bronze menagerie taking tea beneath a tropical glass dome, and gilded sculptures floating above the marble.",
+    coverImage: "/media/qatar/photos/lamp-bear.webp",
+    gallery: [
+      "/media/qatar/photos/golden-hour.webp",
+      "/media/qatar/photos/animal-banquet.webp",
+      "/media/qatar/photos/golden-orb.webp",
+      "/media/qatar/photos/orchard-elephant.webp",
+    ],
+    tags: ["airport", "art", "layover", "architecture"],
+    rating: 5,
+    visited: true,
+    visitDate: "2026-07-02",
+    accentColor: "#c9a227",
+    stats: { photos: 7, days: 1, distanceKm: 5100 },
+  },
+  {
     id: "d1",
     slug: "kyoto",
     name: "Kyoto",

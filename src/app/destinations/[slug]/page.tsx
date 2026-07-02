@@ -10,6 +10,7 @@ import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { destinations, getDestination } from "@/lib/data/destinations";
 import { blur } from "@/lib/data/images";
+import { asset } from "@/lib/asset";
 import { formatCompact, formatMonthYear } from "@/lib/utils";
 
 export function generateStaticParams() {
@@ -51,7 +52,7 @@ export default async function DestinationPage({
       {/* Cinematic hero */}
       <section className="relative h-[70svh] min-h-[520px] w-full overflow-hidden">
         <Image
-          src={destination.coverImage}
+          src={asset(destination.coverImage)}
           alt={destination.name}
           fill
           priority
@@ -121,7 +122,7 @@ export default async function DestinationPage({
                     }`}
                   >
                     <Image
-                      src={src}
+                      src={asset(src)}
                       alt={`${destination.name} photo ${i + 1}`}
                       fill
                       sizes="(max-width: 768px) 50vw, 33vw"

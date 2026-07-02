@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import type { Destination } from "@/lib/types";
 import { blur } from "@/lib/data/images";
+import { asset } from "@/lib/asset";
 import { cn } from "@/lib/utils";
 
 export function DestinationCard({
@@ -30,7 +31,7 @@ export function DestinationCard({
       <Link href={`/destinations/${destination.slug}`} className="block">
         <div className="relative aspect-[4/5] overflow-hidden">
           <Image
-            src={destination.coverImage}
+            src={asset(destination.coverImage)}
             alt={destination.name}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
