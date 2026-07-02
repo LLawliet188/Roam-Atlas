@@ -4,6 +4,8 @@ A premium, cinematic travel portfolio: interactive 3D globe, animated maps, time
 destination stories, galleries, blog/vlog, AI search & assistant, and a full CMS/admin —
 built on Next.js 16 (App Router) + React 19.
 
+**🌍 Live:** https://llawliet188.github.io/Roam-Atlas/ · **Repo:** https://github.com/LLawliet188/Roam-Atlas
+
 > **Not a blog.** The experience aims for the feel of National Geographic × Apple ×
 > Airbnb × Google Earth × Polarsteps.
 
