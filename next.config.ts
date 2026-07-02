@@ -1,8 +1,23 @@
 import type { NextConfig } from "next";
 
+/**
+ * `PAGES=true` is set only in the GitHub Pages CI build. It switches on the
+ * static export + project-site base path. Local `next dev` stays at the root.
+ */
+const isPages = process.env.PAGES === "true";
+const repo = "Roam-Atlas";
+
 const nextConfig: NextConfig = {
+  ...(isPages
+    ? {
+        output: "export",
+        basePath: `/${repo}`,
+        trailingSlash: true,
+      }
+    : {}),
   images: {
-    // Next 16: use remotePatterns (domains is deprecated) + explicit qualities.
+    // GitHub Pages has no image optimizer, so serve images as-is there.
+    unoptimized: isPages,
     remotePatterns: [
       { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "fastly.picsum.photos" },
