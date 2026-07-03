@@ -26,14 +26,6 @@ const H = 500;
 const NUMERIC: Record<string, string> = {
   CZ: "203",
   QA: "634",
-  JP: "392",
-  GR: "300",
-  AR: "032",
-  MA: "504",
-  CA: "124",
-  JO: "400",
-  IS: "352",
-  NZ: "554",
 };
 
 export function WorldMap({ destinations }: { destinations: Destination[] }) {

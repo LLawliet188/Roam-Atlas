@@ -15,7 +15,7 @@ export default function ExplorePage() {
       <PageHeader
         eyebrow="Destinations"
         title="Explore the atlas"
-        description="Every place worth remembering, from lantern-lit Kyoto to the granite spires of Patagonia. Filter by status or vibe."
+        description="Every place worth remembering — real trips only, each backed by its own photos. Filter by status or vibe."
       />
       <Container className="pb-24">
         <ExploreGrid destinations={destinations} countryGroups={countryGroups} />
