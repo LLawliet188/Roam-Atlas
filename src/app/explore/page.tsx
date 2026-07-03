@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ExploreGrid } from "@/components/destinations/explore-grid";
 import { PageHeader } from "@/components/layout/page-header";
 import { Container } from "@/components/ui/container";
-import { destinations } from "@/lib/data/destinations";
+import { countryGroups, destinations } from "@/lib/data/destinations";
 
 export const metadata: Metadata = {
   title: "Explore",
@@ -18,7 +18,7 @@ export default function ExplorePage() {
         description="Every place worth remembering, from lantern-lit Kyoto to the granite spires of Patagonia. Filter by status or vibe."
       />
       <Container className="pb-24">
-        <ExploreGrid destinations={destinations} />
+        <ExploreGrid destinations={destinations} countryGroups={countryGroups} />
       </Container>
     </>
   );

@@ -17,7 +17,7 @@ built on Next.js 16 (App Router) + React 19.
 | UI | React 19, TypeScript (strict), Tailwind CSS **v4** |
 | Components | Hand-rolled shadcn-style primitives (`src/components/ui`) |
 | Motion | Framer Motion, GSAP, CSS keyframes |
-| 3D | Three.js + React Three Fiber + Drei *(Milestone 2)* |
+| 3D | Three.js + React Three Fiber + Drei |
 | Scroll | Lenis smooth scroll |
 | Data (planned) | Supabase (Auth/Postgres/Storage) + Prisma |
 | Media (planned) | Cloudinary |
@@ -45,10 +45,16 @@ src/
     page.tsx               # Cinematic landing
     explore/               # Filterable destination grid (data-backed)
     destinations/[slug]/   # Destination detail (static params + async params)
-    globe|timeline|map|... # Milestone stubs (ComingSoon)
+    globe/                 # M2: interactive 3D globe (R3F)
+    map/                   # M2: scratch map + animated routes
+    timeline/              # M2: scroll-driven travel timeline
+    stories|blog|search|.. # Later-milestone stubs (ComingSoon)
     loading.tsx error.tsx not-found.tsx
     globals.css            # Tailwind v4 theme + design tokens
   components/
+    globe/                 # M2 globe scene + experience
+    map/                   # M2 world/scratch map
+    timeline/              # M2 timeline view
     ui/                    # Primitives: button, card, badge, skeleton, reveal, slot…
     layout/                # navbar, footer, page-header, coming-soon
     landing/               # hero, particle-field, featured, capabilities, marquee, cta
@@ -89,8 +95,14 @@ npm run build      # production build
   Lenis smooth scroll, nav/footer, UI primitives, animated hero (aurora + particles +
   gradient headline), featured grid, capabilities bento, CTA, filterable `/explore`,
   destination detail pages, error/loading/404 boundaries.
-- [ ] **M2 — 3D globe (R3F), animated world map, scratch map, travel timeline.**
-- [ ] **M3 — Country→city hierarchy, richer destination pages, Pinterest gallery + lightbox.**
+- [x] **M2 — 3D globe (R3F), animated world map, scratch map, travel timeline.**
+  Dotted-land Earth with glowing destination pins (Three.js/R3F/drei), a scratch-foil
+  world map with animated great-circle routes and visited-country tinting, and a
+  scroll-driven chronological timeline.
+- [x] **M3 — Country→city hierarchy, richer destination pages, Pinterest gallery + lightbox.**
+  Country-grouped explore view + breadcrumbs + sibling-city navigation, destination
+  pages with highlights and real-photo masonry, and a filterable Pinterest-style
+  gallery (Prague & Doha chapters, films tab, keyboard-navigable lightbox).
 - [ ] **M4 — Stories, MDX blog + vlog, comments, likes, bookmarks, newsletter.**
 - [ ] **M5 — AI semantic search + assistant, stats dashboard, bucket list.**
 - [ ] **M6 — CMS/admin, RBAC auth, autosave, scheduling, drafts, analytics.**

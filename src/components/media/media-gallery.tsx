@@ -1,15 +1,29 @@
 "use client";
 
+/**
+ * M3 — Pinterest-style media gallery with lightbox.
+ * Masonry columns of photos and silent looping films, filterable by
+ * destination, with a keyboard-navigable lightbox.
+ */
+
 import { AnimatePresence, motion } from "framer-motion";
 import { Play, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LazyVideo } from "@/components/media/lazy-video";
 import { asset } from "@/lib/asset";
+import { cn } from "@/lib/utils";
 import type { GalleryPhoto, GalleryVideo } from "@/lib/data/media";
 
 type Item =
   | ({ type: "photo" } & GalleryPhoto)
   | ({ type: "video" } & GalleryVideo);
+
+type Filter = "all" | "films" | string; // string = destination key
+
+const DESTINATION_LABEL: Record<string, string> = {
+  prague: "Prague",
+  doha: "Doha",
+};
 
 /** Interleave photos and videos for a lively masonry rhythm. */
 function interleave(photos: GalleryPhoto[], videos: GalleryVideo[]): Item[] {
@@ -31,12 +45,31 @@ function interleave(photos: GalleryPhoto[], videos: GalleryVideo[]): Item[] {
 export function MediaGallery({
   photos,
   videos,
+  showFilters = false,
 }: {
   photos: GalleryPhoto[];
   videos: GalleryVideo[];
+  /** Show destination/films filter chips (used on the main gallery page). */
+  showFilters?: boolean;
 }) {
-  const items = interleave(photos, videos);
+  const [filter, setFilter] = useState<Filter>("all");
   const [active, setActive] = useState<number | null>(null);
+
+  const destinationKeys = useMemo(
+    () =>
+      Array.from(
+        new Set([...photos, ...videos].map((m) => m.destination))
+      ),
+    [photos, videos]
+  );
+
+  const items = useMemo(() => {
+    if (filter === "films")
+      return videos.map((v) => ({ type: "video", ...v }) as Item);
+    const p = filter === "all" ? photos : photos.filter((x) => x.destination === filter);
+    const v = filter === "all" ? videos : videos.filter((x) => x.destination === filter);
+    return interleave(p, v);
+  }, [filter, photos, videos]);
 
   const close = useCallback(() => setActive(null), []);
   const step = useCallback(
@@ -61,50 +94,85 @@ export function MediaGallery({
   }, [active, close, step]);
 
   const current = active === null ? null : items[active];
+  const chip =
+    "rounded-full px-4 py-2 text-sm font-medium transition-colors border";
 
   return (
     <>
-      <div className="[column-fill:_balance] columns-1 gap-4 sm:columns-2 lg:columns-3">
-        {items.map((item, i) => (
-          <motion.button
-            key={item.id}
-            type="button"
-            onClick={() => setActive(i)}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.5, delay: (i % 3) * 0.05 }}
-            className="group mb-4 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-border bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <div className="relative overflow-hidden">
-              {item.type === "photo" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={asset(item.src)}
-                  alt={item.caption}
-                  loading="lazy"
-                  className="h-auto w-full transition-transform duration-700 ease-out group-hover:scale-105"
-                />
-              ) : (
-                <>
-                  <LazyVideo
-                    src={item.src}
-                    poster={item.poster}
-                    className="transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                  <span className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-black/50 text-white backdrop-blur">
-                    <Play className="size-4 fill-current" />
-                  </span>
-                </>
+      {showFilters && (
+        <div className="mb-8 flex flex-wrap items-center gap-2">
+          {(["all", ...destinationKeys, "films"] as Filter[]).map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => {
+                setFilter(f);
+                setActive(null);
+              }}
+              className={cn(
+                chip,
+                filter === f
+                  ? "border-transparent bg-primary text-primary-foreground"
+                  : "border-border hover:bg-muted"
               )}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-              <p className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 p-4 text-sm font-medium text-white opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                {item.caption}
-              </p>
-            </div>
-          </motion.button>
-        ))}
-      </div>
+            >
+              {f === "all"
+                ? "Everything"
+                : f === "films"
+                  ? "Films"
+                  : DESTINATION_LABEL[f] ?? f}
+            </button>
+          ))}
+          <span className="ml-2 text-sm text-muted-foreground">
+            {items.length} item{items.length === 1 ? "" : "s"}
+          </span>
+        </div>
+      )}
+
+      <motion.div layout className="[column-fill:_balance] columns-1 gap-4 sm:columns-2 lg:columns-3">
+        <AnimatePresence mode="popLayout">
+          {items.map((item, i) => (
+            <motion.button
+              key={item.id}
+              type="button"
+              onClick={() => setActive(i)}
+              layout
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.45, delay: (i % 3) * 0.04 }}
+              className="group mb-4 block w-full break-inside-avoid overflow-hidden rounded-2xl border border-border bg-card text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <div className="relative overflow-hidden">
+                {item.type === "photo" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={asset(item.src)}
+                    alt={item.caption}
+                    loading="lazy"
+                    className="h-auto w-full transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                ) : (
+                  <>
+                    <LazyVideo
+                      src={item.src}
+                      poster={item.poster}
+                      className="transition-transform duration-700 ease-out group-hover:scale-105"
+                    />
+                    <span className="absolute right-3 top-3 grid size-8 place-items-center rounded-full bg-black/50 text-white backdrop-blur">
+                      <Play className="size-4 fill-current" />
+                    </span>
+                  </>
+                )}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <p className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 p-4 text-sm font-medium text-white opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                  {item.caption}
+                </p>
+              </div>
+            </motion.button>
+          ))}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Lightbox */}
       <AnimatePresence>

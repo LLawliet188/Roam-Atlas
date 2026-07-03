@@ -43,6 +43,8 @@ export interface Destination {
   visitDate?: string; // ISO
   /** Accent color used for theming this destination's UI. */
   accentColor: string;
+  /** Trip highlights shown on the destination page (M3). */
+  highlights?: string[];
   stats?: {
     photos: number;
     days: number;

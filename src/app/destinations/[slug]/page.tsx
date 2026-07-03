@@ -1,14 +1,28 @@
-import { ArrowLeft, Calendar, Camera, MapPin, Route, Star } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Camera,
+  Check,
+  MapPin,
+  Route,
+  Star,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DestinationCard } from "@/components/destinations/destination-card";
+import { MediaGallery } from "@/components/media/media-gallery";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
-import { destinations, getDestination } from "@/lib/data/destinations";
+import {
+  destinations,
+  getDestination,
+  siblingCities,
+} from "@/lib/data/destinations";
+import { photosByDestination, videosByDestination } from "@/lib/data/media";
 import { blur } from "@/lib/data/images";
 import { asset } from "@/lib/asset";
 import { formatCompact, formatMonthYear } from "@/lib/utils";
@@ -44,6 +58,9 @@ export default async function DestinationPage({
   const related = destinations
     .filter((d) => d.continent === destination.continent && d.id !== destination.id)
     .slice(0, 3);
+  const siblings = siblingCities(destination);
+  const realPhotos = photosByDestination[destination.slug];
+  const realVideos = videosByDestination[destination.slug] ?? [];
 
   const stat = destination.stats;
 
@@ -69,6 +86,14 @@ export default async function DestinationPage({
               All destinations
             </Link>
           </Button>
+          {/* M3 — country → city hierarchy breadcrumb */}
+          <p className="mb-3 text-sm text-white/70">
+            {destination.continent}
+            <span className="mx-2 text-white/40">/</span>
+            {destination.country}
+            <span className="mx-2 text-white/40">/</span>
+            <span className="text-white">{destination.name}</span>
+          </p>
           <div className="flex flex-wrap items-center gap-3 text-white/90">
             <Badge variant="glass" className="text-white">
               <MapPin className="size-3.5" />
@@ -110,29 +135,53 @@ export default async function DestinationPage({
               </div>
             </Reveal>
 
+            {/* M3 — trip highlights */}
+            {destination.highlights && destination.highlights.length > 0 && (
+              <Reveal className="mt-12">
+                <h2 className="text-2xl font-semibold tracking-tight">Highlights</h2>
+                <ul className="mt-5 space-y-3">
+                  {destination.highlights.map((h) => (
+                    <li key={h} className="flex items-start gap-3 text-muted-foreground">
+                      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">
+                        <Check className="size-3.5" />
+                      </span>
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            )}
+
             {/* Gallery */}
             <Reveal className="mt-12">
               <h2 className="text-2xl font-semibold tracking-tight">Gallery</h2>
-              <div className="mt-5 grid grid-cols-2 gap-4">
-                {destination.gallery.map((src, i) => (
-                  <div
-                    key={src}
-                    className={`relative overflow-hidden rounded-2xl ${
-                      i === 0 ? "col-span-2 aspect-[16/9]" : "aspect-square"
-                    }`}
-                  >
-                    <Image
-                      src={asset(src)}
-                      alt={`${destination.name} photo ${i + 1}`}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 33vw"
-                      placeholder="blur"
-                      blurDataURL={blur(`${destination.slug}-${i}`)}
-                      className="object-cover transition-transform duration-700 hover:scale-105"
-                    />
-                  </div>
-                ))}
-              </div>
+              {realPhotos ? (
+                /* M3 — Pinterest-style masonry + lightbox for real photo sets */
+                <div className="mt-5">
+                  <MediaGallery photos={realPhotos} videos={realVideos} />
+                </div>
+              ) : (
+                <div className="mt-5 grid grid-cols-2 gap-4">
+                  {destination.gallery.map((src, i) => (
+                    <div
+                      key={src}
+                      className={`relative overflow-hidden rounded-2xl ${
+                        i === 0 ? "col-span-2 aspect-[16/9]" : "aspect-square"
+                      }`}
+                    >
+                      <Image
+                        src={asset(src)}
+                        alt={`${destination.name} photo ${i + 1}`}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                        placeholder="blur"
+                        blurDataURL={blur(`${destination.slug}-${i}`)}
+                        className="object-cover transition-transform duration-700 hover:scale-105"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </Reveal>
           </div>
 
@@ -164,6 +213,26 @@ export default async function DestinationPage({
                 <Link href="/globe">View on the globe</Link>
               </Button>
             </div>
+
+            {/* M3 — sibling cities in the same country */}
+            {siblings.length > 0 && (
+              <div className="mt-6 rounded-3xl border border-border bg-card p-6">
+                <h3 className="text-lg font-semibold">Also in {destination.country}</h3>
+                <ul className="mt-3 space-y-2">
+                  {siblings.map((s) => (
+                    <li key={s.id}>
+                      <Link
+                        href={`/destinations/${s.slug}`}
+                        className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <MapPin className="size-3.5" />
+                        {s.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </aside>
         </div>
 

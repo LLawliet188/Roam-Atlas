@@ -15,6 +15,7 @@ export interface NavItem {
 export const mainNav: NavItem[] = [
   { label: "Explore", href: "/explore" },
   { label: "Globe", href: "/globe" },
+  { label: "Map", href: "/map" },
   { label: "Timeline", href: "/timeline" },
   { label: "Stories", href: "/stories" },
   { label: "Gallery", href: "/gallery" },
